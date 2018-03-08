@@ -41,18 +41,18 @@
     set IncludePath=%MyPath%\include
 
     if not "%1" == "" (
-      echo ==== ==== ==== ==== Prepare Include Folder and Files...
-      rd /S /Q "%IncludePath%"
-      mkdir "%IncludePath%"
+        echo ==== ==== ==== ==== Prepare Include Folder and Files...
+        rd /S /Q "%IncludePath%"
+        mkdir "%IncludePath%"
 
-      cd /d %VPATH%
-      copy "lauxlib.h"  "%IncludePath%\\" >nul
-      copy "lua.h"      "%IncludePath%\\" >nul
-      copy "lua.hpp"    "%IncludePath%\\" >nul
-      copy "luaconf.h"  "%IncludePath%\\" >nul
-      copy "lualib.h"   "%IncludePath%\\" >nul
+        cd /d %VPATH%
+        copy "lauxlib.h"  "%IncludePath%\\" >nul
+        copy "lua.h"      "%IncludePath%\\" >nul
+        copy "lua.hpp"    "%IncludePath%\\" >nul
+        copy "luaconf.h"  "%IncludePath%\\" >nul
+        copy "lualib.h"   "%IncludePath%\\" >nul
 
-      echo.
+        echo.
     )
 
 :start
@@ -92,7 +92,7 @@
     if not %errorlevel%==0 goto compile_error
 
     del "%GPATH%\\lua.obj" "%GPATH%\\luac.obj"
-  
+
     %LNK% /DLL /OUT:"%GPATH%\\lua.dll" %LFLAGS% %LFLAGS_PLAT_WINDOWS% /IMPLIB:"%GPATH%\\lua.lib" "%GPATH%\\*.obj" >nul
     if not %errorlevel%==0 goto link_error
 
