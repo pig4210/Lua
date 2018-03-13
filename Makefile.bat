@@ -20,11 +20,14 @@
     set LNK=link
 
 :compileflags
-    set CFLAGS= /c /MP /GS- /Qpar /GL /analyze- /W4 /Gy /Zc:wchar_t /Zi /Gm- /Ox /Zc:inline /fp:precise /D "WIN32" /D "NDEBUG" /D "_UNICODE" /D "UNICODE" /fp:except- /errorReport:none /GF /WX- /Zc:forScope /GR- /Gd /Oy /Oi /MT /EHa /nologo /Fo"%GPATH%\\"
+    set CFLAGS= /c /MP /GS- /Qpar /GL /analyze- /W4 /Gy /Zc:wchar_t /Zi /Gm- /Ox /Zc:inline /fp:precise /D "WIN32" /D "NDEBUG" /D "_UNICODE" /D "UNICODE" /fp:except- /errorReport:none /GF /WX /Zc:forScope /GR- /Gd /Oy /Oi /MT /EHa /nologo /Fo"%GPATH%\\"
 
     set MyCFLAGS= /wd"4244" /wd"4310" /wd"4324" /wd"4702" /D "LUA_COMPAT_ALL" /D"LUA_COMPAT_5_2" /D"LUA_COMPAT_5_1"
 
     if not "%1" == "" set MyCFLAGS=%MyCFLAGS% /D "_USING_V110_SDK71_"
+
+:arflags
+    set ARFLAGS= /LTCG /MACHINE:%PLAT% /ERRORREPORT:NONE /NOLOGO
 
 :linkflags
     if "%1" == "" (
@@ -39,11 +42,12 @@
 
 :makeinclude
     set IncludePath=%MyPath%\include
-
     if not "%1" == "" (
-        echo ==== ==== ==== ==== Prepare Include Folder and Files...
-        rd /S /Q "%IncludePath%"
-        mkdir "%IncludePath%"
+        echo ==== ==== ==== ==== Prepare include folder and files...
+        
+        rd /S /Q "%IncludePath%" >nul
+        if exist "%IncludePath%" goto fail
+        mkdir "%IncludePath%" >nul
 
         cd /d %VPATH%
         copy "lauxlib.h"  "%IncludePath%\\" >nul
@@ -56,19 +60,20 @@
     )
 
 :start
-    echo ==== ==== ==== ==== Start compiling %PLAT%...
+    echo ==== ==== ==== ==== Prepare dest folder(%PLAT%)...
+
+    rd /S /Q "%GPATH%" >nul
+    if exist "%GPATH%" goto fail
+    mkdir "%GPATH%" >nul
 
     echo ==== ==== ==== ==== Prepare environment(%PLAT%)...
+
     cd /d %VCPATH%
     if "%1" == "" (
         call vcvarsall.bat amd64 >nul
     ) else (
         call vcvarsall.bat x86 >nul
     )
-
-    echo ==== ==== ==== ==== Prepare dest folder(%PLAT%)...
-    if not exist "%GPATH%" mkdir %GPATH%
-    del /q "%GPATH%\\*.*"
 
     cd /d %VPATH%
 
@@ -80,15 +85,15 @@
 
     del "%GPATH%\\lua.obj" "%GPATH%\\luac.obj"
 
-    %AR% /OUT:"%GPATH%\\lualib.lib" /LTCG /MACHINE:%PLAT% /NOLOGO "%GPATH%\\*.obj" >nul
+    %AR% %ARFLAGS% /OUT:"%GPATH%\\lualib.lib" "%GPATH%\\*.obj" >nul
     if not %errorlevel%==0 goto link_error
 
-    del "%GPATH%\\*.obj"
+    del "%GPATH%\\*.obj" >nul
 
 :dll
     echo ==== ==== ==== ==== Building DLL(%PLAT%)...
 
-    %CC% %CFLAGS% %MyCFLAGS% /Fd"%GPATH%\\luadll.pdb" /D "_USRDLL" /D "_WINDLL" /D "LUA_BUILD_AS_DLL" *.c >nul
+    %CC% %CFLAGS% %MyCFLAGS% /Fd"%GPATH%\\luadll.pdb" /D "_USRDLL" /D "_WINDLL" /D "LUA_BUILD_AS_DLL" "%VPATH%\\*.c" >nul
     if not %errorlevel%==0 goto compile_error
 
     del "%GPATH%\\lua.obj" "%GPATH%\\luac.obj"
@@ -106,7 +111,7 @@
     if not %errorlevel%==0 goto link_error
 
 :exec
-    echo ==== ==== ==== ==== Building Luac(%PLAT%)...
+    echo ==== ==== ==== ==== Building EXEC(%PLAT%)...
 
     %CC% %CFLAGS% %MyCFLAGS% /Fd"%GPATH%\\luac.pdb" "%VPATH%\\luac.c" >nul
     if not %errorlevel%==0 goto compile_error
@@ -115,15 +120,15 @@
     if not %errorlevel%==0 goto link_error
 
 :dllexe
-    echo ==== ==== ==== ==== Building DllExe(%PLAT%)...
+    echo ==== ==== ==== ==== Building DLLEXE(%PLAT%)...
 
     %LNK% /OUT:"%GPATH%\\luadll.exe" %LFLAGS% %LFLAGS_PLAT_CONSOLE% "%GPATH%\\lua.lib" "%GPATH%\\lua.obj" >nul
     if not %errorlevel%==0 goto link_error
 
-:done
-    del "%GPATH%\\*.obj"
-    echo.
+    del "%GPATH%\\*.obj" >nul
 
+:done
+    echo.
     endlocal
 
     if "%1" == "" (
@@ -133,7 +138,6 @@
     )
 
     echo done.
-
     goto end
 
 :compile_error
@@ -142,6 +146,10 @@
 
 :link_error
     echo !!!!!!!!Link error!!!!!!!!
+    goto end
+
+:fail
+    echo !!!!!!!!Fail!!!!!!!!
     goto end
 
 :end

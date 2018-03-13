@@ -1,11 +1,11 @@
 ﻿# Lua
 
-这里提供的[Makefile.bat](./Makefile.bat)，用于使用VS2017命令行编译Lua
+这里提供的[Makefile.bat](./Makefile.bat)，使用VS2017命令行编译项目
 
-如需要使用其它VS编译其它版本，请修改如下参考：
+如需要使用其它VS编译其它版本，请修改如下配置：
 
     set VCPATH=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
-    set VPATH=%MyPath%\\lua-5.3.4\\src
+    set VPATH=%MyPath%\\xxx-x.x.x
 
 虽然使用Makefile看起来高大上，但这里不采用，原因如下：
 - nmake不支持VPATH，前缀路径无法触发默认编译，无特殊宏“&@”等
