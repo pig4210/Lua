@@ -109,14 +109,14 @@ LINK		:= link.exe
 AR			:= lib.exe
 
 ######## CFLAGS
-CFLAGS		= /c /MP /GS- /Qpar /GL /analyze- /W4 /Gy /Zc:wchar_t /Zi /Gm- /Ox /Zc:inline /fp:precise /D WIN32 /D NDEBUG /D _UNICODE /D UNICODE /fp:except- /errorReport:none /GF /WX /Zc:forScope /GR- /Gd /Oy /Oi /MT /EHa /nologo
-CFLAGS		+= /D LUA_COMPAT_ALL /D LUA_COMPAT_5_2 /D LUA_COMPAT_5_1
+CFLAGS		= /c /MP /GS- /Qpar /GL /analyze- /W4 /Gy /Zc:wchar_t /Zi /Gm- /Ox /Zc:inline /fp:precise /DWIN32 /DNDEBUG /D_UNICODE /DUNICODE /fp:except- /errorReport:none /GF /WX /Zc:forScope /GR- /Gd /Oy /Oi /MT /EHa /nologo
+CFLAGS		+= /DLUA_COMPAT_ALL /DLUA_COMPAT_5_2 /DLUA_COMPAT_5_1
 CFLAGS		+= /I"$(SRCPATH)"
 CFLAGS		+= /Fd"$(DESTPATH)/"
 CFLAGS		+= /wd4244 /wd4310 /wd4324 /wd4702
 
 ifeq "$(Platform)" "x86"
-CFLAGS		+= /D _USING_V110_SDK71_
+CFLAGS		+= /D_USING_V110_SDK71_
 endif
 
 CFLAGS		+= $(MyCFLAGS)
@@ -169,11 +169,11 @@ $(INCPATH)/% : % | $(INCPATH)
 # 编译8
 %.o : %.c | $(DESTPATH)
 ifeq "$(MAKECMDGOALS)" "lua.lib"
-	$(CC) $(CFLAGS) /D _LIB /Fo"$(DESTPATH)/$(@F)" "$<"
+	$(CC) $(CFLAGS) /D_LIB /Fo"$(DESTPATH)/$(@F)" "$<"
 else ifeq "$(MAKECMDGOALS)" "luac.exe"
-	$(CC) $(CFLAGS) /D _LIB /Fo"$(DESTPATH)/$(@F)" "$<"
+	$(CC) $(CFLAGS) /D_LIB /Fo"$(DESTPATH)/$(@F)" "$<"
 else
-	$(CC) $(CFLAGS) /D _USRDLL /D _WINDLL /D LUA_BUILD_AS_DLL /Fo"$(DESTPATH)/$(@F)" "$<"
+	$(CC) $(CFLAGS) /D_USRDLL /D_WINDLL /DLUA_BUILD_AS_DLL /Fo"$(DESTPATH)/$(@F)" "$<"
 
 lua.o : lua.c | $(DESTPATH)
 	$(CC) $(CFLAGS) /Fo"$(DESTPATH)/$(@F)" "$<"
@@ -225,6 +225,6 @@ luac.exe : luac.o lua.lib
 ######## CLEAN
 .PHONY : clean
 clean :
-	@if exist "x64" @rd /s /q "x64"
-	@if exist "x86" @rd /s /q "x86"
-	@if exist "include" @rd /s /q "include"
+	@if exist x64 @rd /s /q x64
+	@if exist x86 @rd /s /q x86
+	@if exist include @rd /s /q include
