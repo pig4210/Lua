@@ -12,7 +12,7 @@ nmake 不支持 VPATH ，前缀路径无法触发默认编译，无特殊宏 `&@
 
 参考 Lua 提供的 windows 下的编译手段，实现特化 Makefile 。
 
-`Makefile` 使用 GNU make 编译  。
+`Makefile` 使用 GNU make 编译 Lua 。
 
 `Makefile.bat` 检测当前环境，决定编译结果：
 
