@@ -166,7 +166,7 @@ $(INCPATH)/% : % | $(INCPATH)
 	copy /y "$(?D)\\$(?F)" "$(@D)\\$(@F)"
 
 ######## 格式匹配规则
-# 编译8
+# 编译
 %.o : %.c | $(DESTPATH)
 ifeq "$(MAKECMDGOALS)" "lua.lib"
 	$(CC) $(CFLAGS) /D_LIB /Fo"$(DESTPATH)/$(@F)" "$<"
